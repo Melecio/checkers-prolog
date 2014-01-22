@@ -10,7 +10,7 @@
 
 inicializarTablero(Tablero) :-
     Tablero = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', '<<', ' ', ' ', ' ', ' ', ' ',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
@@ -21,19 +21,19 @@ inicializarTablero(Tablero) :-
 
 
 
-comerDiagonal(X,Y,X,Y,Tablero):-
+comerDiagonal(X,Y,X1,Y1,Tablero):-
+	X =:= X1, Y =:= Y1,
 	nb_setval(tab,Tablero).
 comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la derecha
 	X1 < X,
 	Y1 > Y,
 	nb_getval(turno, Turno),
 	calcPos(X-1,Y+1, Posicion),
-	write('Calculo'),nl,	
 	Adversario is (Turno + 1) mod 2,
 	(esVacia(Posicion,Tablero) ; verificarFicha(Posicion, Tablero, Adversario)),
 
-	remove_at(X, Tablero, PosMedio, Tablero1),
-	insert_at(' ', Tablero1, PosMedio, Tablero2),
+	remove_at(_, Tablero, Posicion, Tablero1),
+	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X-1,Y+1,X1,Y1,Tablero2).
 	
 comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la izquierda
@@ -44,8 +44,8 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la izquierda
 	Adversario is (Turno + 1) mod 2,
 	(esVacia(Posicion,Tablero) ; verificarFicha(Posicion, Tablero, Adversario)),
 
-	remove_at(X, Tablero, PosMedio, Tablero1),
-	insert_at(' ', Tablero1, PosMedio, Tablero2),
+	remove_at(_, Tablero, Posicion, Tablero1),
+	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X-1,Y-1,X1,Y1,Tablero2).
 	
 comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la derecha 
@@ -55,8 +55,8 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la derecha
 	calcPos(X+1,Y+1, Posicion),
 	Adversario is (Turno + 1) mod 2,
 	(esVacia(Posicion,Tablero) ; verificarFicha(Posicion, Tablero, Adversario)),
-	remove_at(X, Tablero, PosMedio, Tablero1),
-	insert_at(' ', Tablero1, PosMedio, Tablero2),
+	remove_at(_, Tablero, Posicion, Tablero1),
+	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X+1,Y+1,X1,Y1,Tablero2).
 	
 comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la izquierda 
@@ -66,8 +66,8 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la izquierda
 	calcPos(X+1,Y-1, Posicion),
 	Adversario is (Turno + 1) mod 2,
 	(esVacia(Posicion,Tablero) ; verificarFicha(Posicion, Tablero, Adversario)),
-	remove_at(X, Tablero, PosMedio, Tablero1),
-	insert_at(' ', Tablero1, PosMedio, Tablero2),
+	remove_at(_, Tablero, Posicion, Tablero1),
+	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X+1,Y-1,X1,Y1,Tablero2).
 	
 
