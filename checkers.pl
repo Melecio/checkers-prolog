@@ -1,6 +1,6 @@
 inicializarTablero(Tablero) :-
     Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
-               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
+               '<<', ' ', '<', ' ', '<', ' ', '<', ' ',
                ' ', '<', ' ', '<', ' ', '<', ' ', '<',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
@@ -8,11 +8,80 @@ inicializarTablero(Tablero) :-
                '>', ' ', '>', ' ', '>', ' ', '>', ' ',
                ' ', '>', ' ', '>', ' ', '>', ' ', '>'].
 
-jugada(X1,Y1,X2,Y2) :-
+
+coordValidas(X1, Y1, X2, Y2, Casilla) :-
+    Casilla = '<',
     X2 < 9,
     Y2 < 9,
     X1 < 9,
-    Y1 < 9.
+    Y1 < 9,
+    (
+    (X2 =:= X1+1, Y2 =:= Y1+1);
+    (X2 =:= X1+1, Y2 =:= Y1-1)
+    ).
+
+coordValidas(X1, Y1, X2, Y2, Casilla) :-
+    Casilla = '>',
+    X2 < 9,
+    Y2 < 9,
+    X1 < 9,
+    Y1 < 9,
+    (
+    (X2 =:= X1-1, Y2 =:= Y1+1);
+    (X2 =:= X1-1, Y2 =:= Y1-1)
+    ).
+coordValidas(X1, Y1, X2, Y2, Casilla) :-
+    Casilla = '<<',
+    X2 < 9,
+    Y2 < 9,
+    X1 < 9,
+    Y1 < 9,
+    (
+    (X2 =:= X1-1, Y2 =:= Y1-1);
+    (X2 =:= X1-1, Y2 =:= Y1+1);
+    (X2 =:= X1+1, Y2 =:= Y1+1);
+    (X2 =:= X1+1, Y2 =:= Y1-1)
+    ).
+coordValidas(X1, Y1, X2, Y2, Casilla) :-
+    Casilla = '>>',
+    X2 < 9,
+    Y2 < 9,
+    X1 < 9,
+    Y1 < 9,
+    (
+    (X2 =:= X1-1, Y2 =:= Y1-1);
+    (X2 =:= X1-1, Y2 =:= Y1+1);
+    (X2 =:= X1+1, Y2 =:= Y1+1);
+    (X2 =:= X1+1, Y2 =:= Y1-1)
+    ).
+
+esTurno(Casilla, Turno) :-
+    Casilla = '>',
+    Casilla = Turno.
+esTurno(Casilla, Turno) :-
+    Casilla = '>>',
+    Turno = '>'.
+esTurno(Casilla, Turno) :-
+    Casilla = '<<',
+    Turno = '<'.
+esTurno(Casilla, Turno) :-
+    Casilla = '<',
+    Casilla = Turno.
+    
+jugada(X1,Y1,X2,Y2) :-
+    nb_getval(turno, Turno),
+    nb_getval(tab, Tablero),
+    element_at(Casilla, Tablero, (X1-1)*8+Y1),
+    esTurno(Casilla, Turno),
+    coordValidas(X1,Y1,X2,Y2, Casilla).
+    %% Casilla = Turno,
+    %% element_at(Destino, Tablero, (X2-1)*8+Y2),
+    
+
+
+
+    
+
 
 
 element_at(X,[X|_],1).
