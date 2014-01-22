@@ -38,59 +38,18 @@ puedeMoverse(X,Y,X1,Y1):-
 	esVacia(Dest, Tablero),
 
 	X1 =:= X -4*Turno + 2,
-	(Y1 =:= Y + 2  ;  Y1 =:= Y -2),
+	(Y1 =:= Y + 2  ;  Y1 =:= Y - 2),
+	write('llegue hola'),nl,
 	puntoMedio(X,X1,Xmedio),
 	puntoMedio(Y,Y1,Ymedio),
 	calcPos(Xmedio,Ymedio,PosMedio),
-	verificarFicha(PosMedio, Tablero, (Turno + 1) mod 2).
+	write('Ya calcule punto medio'),nl,
+	Adversario is (Turno + 1) mod 2,
+	verificarFicha(PosMedio, Tablero, Adversario),
+	write('Verifico'),nl,
+%	comerFicha(PosMedio),
+	write('ya comi'),nl.
 
-
-
-coordValidas(X1, Y1, X2, Y2, Ficha) :-
-    Ficha = '<',
-    X2 < 9,
-    Y2 < 9,
-    X1 < 9,
-    Y1 < 9,
-    (
-    (X2 is X1+1, Y2 is Y1+1);
-    (X2 is X1+1, Y2 is Y1-1)
-    ).
-
-coordValidas(X1, Y1, X2, Y2, Ficha) :-
-    Ficha = '>',
-    X2 < 9,
-    Y2 < 9,
-    X1 < 9,
-    Y1 < 9,
-    (
-    (X2 is X1-1, Y2 is Y1+1);
-    (X2 is X1-1, Y2 is Y1-1)
-    ).
-coordValidas(X1, Y1, X2, Y2, Ficha) :-
-    Ficha = '<<',
-    X2 < 9,
-    Y2 < 9,
-    X1 < 9,
-    Y1 < 9,
-    (
-    (X2 is X1-1, Y2 is Y1-1);
-    (X2 is X1-1, Y2 is Y1+1);
-    (X2 is X1+1, Y2 is Y1+1);
-    (X2 is X1+1, Y2 is Y1-1)
-    ).
-coordValidas(X1, Y1, X2, Y2, Ficha) :-
-    Ficha = '>>',
-    X2 < 9,
-    Y2 < 9,
-    X1 < 9,
-    Y1 < 9,
-    (
-    (X2 is X1-1, Y2 is Y1-1);
-    (X2 is X1-1, Y2 is Y1+1);
-    (X2 is X1+1, Y2 is Y1+1);
-    (X2 is X1+1, Y2 is Y1-1)
-    ).
 
 puntoMedio(A, B, C):-
 	C is (A + B) div 2.
@@ -115,11 +74,6 @@ verificarFicha(Posicion, Tablero, Turno) :-
 esVacia(Posicion, Tablero):-
 	 element_at(Ficha, Tablero, Posicion),
 	 Ficha = ' '.
-
-destinoValido(Destino, Turno) :-
-    Destino = ' '.
-
-
 
 imprimirTablero :-
     nb_getval(tab,Tablero),
@@ -159,15 +113,27 @@ imprimirLinea([X|Xs]) :-
     imprimirLinea(Xs).
     
 
-
 calcPos(X,Y,Z):-
 	Z is(X-1)*8 +Y.
+
+
+comerFicha(PosMedio):- 
+	write('andentro de comerficha '),nl,
+	nb_getval(tab, Tablero),
+	element_at(X,Tabl,PosMedio),
+
+	remove_at('>', Tabl, PosMedio, Tablero1),
+	write('Pos medio es = '),
+	write(PosMedio),nl,
+	insert_at(' ', Tablero2, PosMedio, Tablero3),
+	nb_setval(tab, Tablero3).	
 
 mover(Tablero, PosIni, PosFin, Ficha) :-
     remove_at(Ficha, Tablero, PosIni, Tablero2),
     insert_at(' ', Tablero2, PosIni, Tablero3),
     remove_at(' ', Tablero3, PosFin, Tablero4),
     insert_at(Ficha, Tablero4, PosFin, Tablero5),
+
     nb_setval(tab, Tablero5).
 
 jugadaAux(X,Y,X1,Y1) :-
@@ -175,19 +141,9 @@ jugadaAux(X,Y,X1,Y1) :-
 		nb_getval(tab, Tablero),
 		PosIni = (X-1)*8+Y,
 		element_at(Ficha, Tablero, PosIni),
-		write('Esta es la ficha = '),
 		write(Ficha),nl,
-		%esTurno(Ficha, Turno),
-		write('antes de puedeMoverse'),nl,
 		puedeMoverse(X,Y,X1,Y1),
-		
-		write('despues de puedeMoverse'),nl,
-
-%		coordValidas(X1,Y1,X2,Y2,Ficha),
 		calcPos(X1,Y1,PosFin),
-%		element_at(Destino, Tablero, PosFin),
-%		destinoValido(Destino,Turno),
-
 		write('Despues de calc'),nl,
 		mover(Tablero, PosIni, PosFin, Ficha),
 		cambiarTurno,
@@ -262,5 +218,9 @@ jugar :-
     imprimirTurno, nl.
     % Imprimir tablero
 
-
+prueba:-
+	jugada(6,5,5,4),
+	jugada(3,4,4,3),
+	jugada(6,7,5,8),
+	jugada(4,3,6,5).
 
