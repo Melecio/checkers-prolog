@@ -126,19 +126,26 @@ jugada(X1,Y1,X2,Y2) :-
     PosIni = (X1-1)*8+Y1,
     element_at(Casilla, Tablero, PosIni),
     esTurno(Casilla, Turno),
-
     coordValidas(X1,Y1,X2,Y2, Casilla),
-
     PosFin = (X2-1)*8+Y2,
     element_at(Destino, Tablero, PosFin),
     destinoValido(Destino,Turno),
     mover(Tablero, PosIni, PosFin, Casilla),
-    imprimirTablero.
+    cambiarTurno(Turno),
+    imprimirTablero, nl,
+    imprimirTurno, nl.
 
 
     %% Casilla = Turno,
     %% element_at(Destino, Tablero, (X2-1)*8+Y2),
-    
+
+
+cambiarTurno(Turno) :-
+    Turno = '>',
+    nb_setval(turno,'<').
+cambiarTurno(Turno) :-
+    Turno = '<',
+    nb_setval(turno,'>').
 
 slice([X|_],1,1,[X]).
 slice([X|Xs],1,K,[X|Ys]) :- K > 1, 
@@ -164,10 +171,12 @@ contramaquina(Respuesta) :-
     Respuesta = 'n',
     write('contra jugador').
 
-imprimirTurno(Turno) :-
+imprimirTurno :-
+    nb_getval(turno, Turno),
     Turno = '<',
     write('Juega jugador 1').
-imprimirTurno(Turno) :-
+imprimirTurno :-
+    nb_getval(turno, Turno),
     Turno = '>',
     write('Juega jugador 2').
 
@@ -175,8 +184,8 @@ jugar :-
     inicializarTablero(Tablero),
     nb_setval(tab, Tablero),
     nb_setval(turno, '<'),
-    imprimirTurno('<'), nl,
-    imprimirTablero.
+    imprimirTablero, nl,
+    imprimirTurno, nl.
     % Imprimir tablero
 
 
