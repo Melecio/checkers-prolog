@@ -134,7 +134,10 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	calcPos(Xmedio,Ymedio,PosMedio),
 	Adversario is (Turno + 1) mod 2,
 	verificarFicha(PosMedio, Tablero, Adversario),
+<<<<<<< HEAD
+=======
 	write('Verifico'),nl,
+>>>>>>> a13cde9377e458150490db69ec6f1af4bf6dbf07
 	comerFicha(PosMedio).
 
 
@@ -194,6 +197,13 @@ imprimirTablero :-
 imprimirLinea([]) :-
     !.
 imprimirLinea([X|Xs]) :-
+    (X = '>>' ; X = '<<'),
+    write('|'),
+    write(X),
+    write('| '),
+    imprimirLinea(Xs).
+
+imprimirLinea([X|Xs]) :-
     write('|'),
     write(X),
     write(' | '),
@@ -205,11 +215,19 @@ calcPos(X,Y,Z):-
 
 
 comerFicha(PosMedio):- 
-	write('andentro de comerficha '),nl,
 	nb_getval(tab, Tablero),
+<<<<<<< HEAD
+    write('Hola'), nl, 
+	remove_at('>', Tablero, PosMedio, Tablero1),
+    write(Tablero), nl, 
+    write(Tablero1), nl,
+	insert_at(' ', Tablero1, PosMedio, Tablero2),
+    write(Tablero2), nl,
+=======
 	element_at(X, Tablero, PosMedio),
 	remove_at(X, Tablero, PosMedio, Tablero1),
 	insert_at(' ', Tablero1, PosMedio, Tablero2),
+>>>>>>> a13cde9377e458150490db69ec6f1af4bf6dbf07
 	nb_setval(tab, Tablero2).	
 
 mover(Tablero, PosIni, PosFin, Ficha) :-
@@ -228,11 +246,14 @@ jugadaAux(X,Y,X1,Y1) :-
 		write(Ficha),nl,
 		puedeMoverse(X,Y,X1,Y1),
 		calcPos(X1,Y1,PosFin),
+<<<<<<< HEAD
+		mover(Tablero, PosIni, PosFin, Ficha),
+=======
 		write('Se calcula la posicion de destino'),nl,
 		nb_getval(tab, Tablero2), %Se vuelve a setear tablero
 		mover(Tablero2, PosIni, PosFin, Ficha),
+>>>>>>> a13cde9377e458150490db69ec6f1af4bf6dbf07
 		cambiarTurno,
-		write('No se que pasa...'),nl,
 		imprimirTablero, nl,
 		imprimirTurno, nl.
 
@@ -303,9 +324,14 @@ jugar :-
     imprimirTurno, nl.
     % Imprimir tablero
 
+
+% Pruebas
+
 prueba:-
 	jugada(6,5,5,4),
 	jugada(3,4,4,3),
 	jugada(6,7,5,8),
 	jugada(4,3,6,5).
 
+recta(X,X1,Y,Y1,M) :-
+    Y - Y1 == M*(X-X1).
