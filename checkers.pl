@@ -39,16 +39,13 @@ puedeMoverse(X,Y,X1,Y1):-
 
 	X1 =:= X -4*Turno + 2,
 	(Y1 =:= Y + 2  ;  Y1 =:= Y - 2),
-	write('llegue hola'),nl,
 	puntoMedio(X,X1,Xmedio),
 	puntoMedio(Y,Y1,Ymedio),
 	calcPos(Xmedio,Ymedio,PosMedio),
-	write('Ya calcule punto medio'),nl,
 	Adversario is (Turno + 1) mod 2,
 	verificarFicha(PosMedio, Tablero, Adversario),
 	write('Verifico'),nl,
-%	comerFicha(PosMedio),
-	write('ya comi'),nl.
+	comerFicha(PosMedio).
 
 
 puntoMedio(A, B, C):-
@@ -120,13 +117,10 @@ calcPos(X,Y,Z):-
 comerFicha(PosMedio):- 
 	write('andentro de comerficha '),nl,
 	nb_getval(tab, Tablero),
-	element_at(X,Tabl,PosMedio),
-
-	remove_at('>', Tabl, PosMedio, Tablero1),
-	write('Pos medio es = '),
-	write(PosMedio),nl,
-	insert_at(' ', Tablero2, PosMedio, Tablero3),
-	nb_setval(tab, Tablero3).	
+	element_at(X, Tablero, PosMedio),
+	remove_at(X, Tablero, PosMedio, Tablero1),
+	insert_at(' ', Tablero1, PosMedio, Tablero2),
+	nb_setval(tab, Tablero2).	
 
 mover(Tablero, PosIni, PosFin, Ficha) :-
     remove_at(Ficha, Tablero, PosIni, Tablero2),
@@ -144,8 +138,9 @@ jugadaAux(X,Y,X1,Y1) :-
 		write(Ficha),nl,
 		puedeMoverse(X,Y,X1,Y1),
 		calcPos(X1,Y1,PosFin),
-		write('Despues de calc'),nl,
-		mover(Tablero, PosIni, PosFin, Ficha),
+		write('Se calcula la posicion de destino'),nl,
+		nb_getval(tab, Tablero2), %Se vuelve a setear tablero
+		mover(Tablero2, PosIni, PosFin, Ficha),
 		cambiarTurno,
 		write('No se que pasa...'),nl,
 		imprimirTablero, nl,
