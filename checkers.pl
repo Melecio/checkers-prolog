@@ -10,14 +10,23 @@ inicializarTablero(Tablero) :-
 
 
 
+esDama(Ficha):-
+	Ficha = '<<' ;
+	Ficha = '>>'.	
+esPeon(Ficha):-
+	Ficha = '<' ;
+	Ficha = '>'.	
+
 puedeMoverse(X,Y,X1,Y1):-
 	X < 9,
 	Y < 9,
 	X1 < 9,
 	Y1 < 9,
-	nb_getval(turno,Turno),  %Se obtiene el turno
 	nb_getval(tab,Tablero),  %Se obtiene el tablero
 	calcPos(X,Y,Orig),
+	element_at(Ficha, Tablero, Orig),
+	esPeon(Ficha),
+	nb_getval(turno,Turno),  %Se obtiene el turno
 	calcPos(X1,Y1,Dest),        %Posicion de destino
 	verificarFicha(Orig, Tablero, Turno),
 	esVacia(Dest, Tablero),
@@ -30,9 +39,10 @@ puedeMoverse(X,Y,X1,Y1):-
 	Y < 9,
 	X1 < 9,
 	Y1 < 9,
-	nb_getval(turno,Turno),  %Se obtiene el turno
-	nb_getval(tab,Tablero),  %Se obtiene el tablero
 	calcPos(X,Y,Orig),
+	nb_getval(tab,Tablero),  %Se obtiene el tablero
+	
+	nb_getval(turno,Turno),  %Se obtiene el turno
 	calcPos(X1,Y1,Dest),        %Posicion de destino
 	verificarFicha(Orig, Tablero, Turno),
 	esVacia(Dest, Tablero),
@@ -44,6 +54,10 @@ puedeMoverse(X,Y,X1,Y1):-
 	calcPos(Xmedio,Ymedio,PosMedio),
 	Adversario is (Turno + 1) mod 2,
 	verificarFicha(PosMedio, Tablero, Adversario),
+<<<<<<< HEAD
+=======
+	write('Verifico'),nl,
+>>>>>>> a13cde9377e458150490db69ec6f1af4bf6dbf07
 	comerFicha(PosMedio).
 
 
@@ -122,12 +136,18 @@ calcPos(X,Y,Z):-
 
 comerFicha(PosMedio):- 
 	nb_getval(tab, Tablero),
+<<<<<<< HEAD
     write('Hola'), nl, 
 	remove_at('>', Tablero, PosMedio, Tablero1),
     write(Tablero), nl, 
     write(Tablero1), nl,
 	insert_at(' ', Tablero1, PosMedio, Tablero2),
     write(Tablero2), nl,
+=======
+	element_at(X, Tablero, PosMedio),
+	remove_at(X, Tablero, PosMedio, Tablero1),
+	insert_at(' ', Tablero1, PosMedio, Tablero2),
+>>>>>>> a13cde9377e458150490db69ec6f1af4bf6dbf07
 	nb_setval(tab, Tablero2).	
 
 mover(Tablero, PosIni, PosFin, Ficha) :-
@@ -146,7 +166,13 @@ jugadaAux(X,Y,X1,Y1) :-
 		write(Ficha),nl,
 		puedeMoverse(X,Y,X1,Y1),
 		calcPos(X1,Y1,PosFin),
+<<<<<<< HEAD
 		mover(Tablero, PosIni, PosFin, Ficha),
+=======
+		write('Se calcula la posicion de destino'),nl,
+		nb_getval(tab, Tablero2), %Se vuelve a setear tablero
+		mover(Tablero2, PosIni, PosFin, Ficha),
+>>>>>>> a13cde9377e458150490db69ec6f1af4bf6dbf07
 		cambiarTurno,
 		imprimirTablero, nl,
 		imprimirTurno, nl.
