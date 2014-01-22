@@ -10,14 +10,23 @@ inicializarTablero(Tablero) :-
 
 
 
+esDama(Ficha):-
+	Ficha = '<<' ;
+	Ficha = '>>'.	
+esPeon(Ficha):-
+	Ficha = '<' ;
+	Ficha = '>'.	
+
 puedeMoverse(X,Y,X1,Y1):-
 	X < 9,
 	Y < 9,
 	X1 < 9,
 	Y1 < 9,
-	nb_getval(turno,Turno),  %Se obtiene el turno
 	nb_getval(tab,Tablero),  %Se obtiene el tablero
 	calcPos(X,Y,Orig),
+	element_at(Ficha, Tablero, Orig),
+	esPeon(Ficha),
+	nb_getval(turno,Turno),  %Se obtiene el turno
 	calcPos(X1,Y1,Dest),        %Posicion de destino
 	verificarFicha(Orig, Tablero, Turno),
 	esVacia(Dest, Tablero),
@@ -30,9 +39,10 @@ puedeMoverse(X,Y,X1,Y1):-
 	Y < 9,
 	X1 < 9,
 	Y1 < 9,
-	nb_getval(turno,Turno),  %Se obtiene el turno
-	nb_getval(tab,Tablero),  %Se obtiene el tablero
 	calcPos(X,Y,Orig),
+	nb_getval(tab,Tablero),  %Se obtiene el tablero
+	
+	nb_getval(turno,Turno),  %Se obtiene el turno
 	calcPos(X1,Y1,Dest),        %Posicion de destino
 	verificarFicha(Orig, Tablero, Turno),
 	esVacia(Dest, Tablero),
