@@ -67,13 +67,30 @@ esTurno(Casilla, Turno) :-
 esTurno(Casilla, Turno) :-
     Casilla = '<',
     Casilla = Turno.
-    
+
+destinoValido(Destino, Turno) :-
+    Destino = ' '.
+
+mover(Tablero, PosIni, PosFin, Casilla) :-
+    insert_at(' ', Tablero, PosIni, Tablero2),
+    insert_at(Casilla, Tablero2, PosFin, Tablero3),
+    nb_setval(tab, Tablero3).
+
 jugada(X1,Y1,X2,Y2) :-
     nb_getval(turno, Turno),
     nb_getval(tab, Tablero),
-    element_at(Casilla, Tablero, (X1-1)*8+Y1),
+    PosIni = (X1-1)*8+Y1,
+    element_at(Casilla, Tablero, PosIni),
     esTurno(Casilla, Turno),
-    coordValidas(X1,Y1,X2,Y2, Casilla).
+
+    coordValidas(X1,Y1,X2,Y2, Casilla),
+
+    PosFin = (X2-1)*8+Y2,
+    element_at(Destino, Tablero, PosFin),
+    destinoValido(Destino,Turno),
+    write('debug'),
+    mover(Tablero, PosIni, PosFin, Casilla).
+
     %% Casilla = Turno,
     %% element_at(Destino, Tablero, (X2-1)*8+Y2),
     
@@ -111,6 +128,7 @@ imprimirTurno(Turno) :-
 
 jugar :-
     inicializarTablero(Tablero),
+    print(Tablero),
     nb_setval(tab, Tablero),
     nb_setval(turno, '<'),
     imprimirTurno('<').
