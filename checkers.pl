@@ -9,64 +9,112 @@ inicializarTablero(Tablero) :-
                ' ', '>', ' ', '>', ' ', '>', ' ', '>'].
 
 
-coordValidas(X1, Y1, X2, Y2, Casilla) :-
-    Casilla = '<',
+
+puedeMoverse(X,Y,X1,Y1):-
+	X < 9,
+	Y < 9,
+	X1 < 9,
+	Y1 < 9,
+	nb_getval(turno,Turno),  %Se obtiene el turno
+	nb_getval(tab,Tablero),  %Se obtiene el tablero
+	calcPos(X,Y,Orig),
+	calcPos(X1,Y1,Dest),        %Posicion de destino
+	verificarFicha(Orig, Tablero, Turno),
+	esVacia(Dest, Tablero),
+
+	X1 =:= X -2*Turno + 1,
+	(Y1 =:= Y + 1  ;  Y1 =:= Y - 1).
+
+puedeMoverse(X,Y,X1,Y1):-
+	X < 9,
+	Y < 9,
+	X1 < 9,
+	Y1 < 9,
+	nb_getval(turno,Turno),  %Se obtiene el turno
+	nb_getval(tab,Tablero),  %Se obtiene el tablero
+	calcPos(X,Y,Orig),
+	calcPos(X1,Y1,Dest),        %Posicion de destino
+	verificarFicha(Orig, Tablero, Turno),
+	esVacia(Dest, Tablero),
+
+	X1 =:= X -4*Turno + 2,
+	(Y1 =:= Y + 2  ;  Y1 =:= Y -2),
+	puntoMedio(X,X1,Xmedio),
+	puntoMedio(Y,Y1,Ymedio),
+	calcPos(Xmedio,Ymedio,PosMedio),
+	verificarFicha(PosMedio, Tablero, (Turno + 1) mod 2).
+
+
+
+coordValidas(X1, Y1, X2, Y2, Ficha) :-
+    Ficha = '<',
     X2 < 9,
     Y2 < 9,
     X1 < 9,
     Y1 < 9,
     (
-    (X2 =:= X1+1, Y2 =:= Y1+1);
-    (X2 =:= X1+1, Y2 =:= Y1-1)
+    (X2 is X1+1, Y2 is Y1+1);
+    (X2 is X1+1, Y2 is Y1-1)
     ).
 
-coordValidas(X1, Y1, X2, Y2, Casilla) :-
-    Casilla = '>',
+coordValidas(X1, Y1, X2, Y2, Ficha) :-
+    Ficha = '>',
     X2 < 9,
     Y2 < 9,
     X1 < 9,
     Y1 < 9,
     (
-    (X2 =:= X1-1, Y2 =:= Y1+1);
-    (X2 =:= X1-1, Y2 =:= Y1-1)
+    (X2 is X1-1, Y2 is Y1+1);
+    (X2 is X1-1, Y2 is Y1-1)
     ).
-coordValidas(X1, Y1, X2, Y2, Casilla) :-
-    Casilla = '<<',
+coordValidas(X1, Y1, X2, Y2, Ficha) :-
+    Ficha = '<<',
     X2 < 9,
     Y2 < 9,
     X1 < 9,
     Y1 < 9,
     (
-    (X2 =:= X1-1, Y2 =:= Y1-1);
-    (X2 =:= X1-1, Y2 =:= Y1+1);
-    (X2 =:= X1+1, Y2 =:= Y1+1);
-    (X2 =:= X1+1, Y2 =:= Y1-1)
+    (X2 is X1-1, Y2 is Y1-1);
+    (X2 is X1-1, Y2 is Y1+1);
+    (X2 is X1+1, Y2 is Y1+1);
+    (X2 is X1+1, Y2 is Y1-1)
     ).
-coordValidas(X1, Y1, X2, Y2, Casilla) :-
-    Casilla = '>>',
+coordValidas(X1, Y1, X2, Y2, Ficha) :-
+    Ficha = '>>',
     X2 < 9,
     Y2 < 9,
     X1 < 9,
     Y1 < 9,
     (
-    (X2 =:= X1-1, Y2 =:= Y1-1);
-    (X2 =:= X1-1, Y2 =:= Y1+1);
-    (X2 =:= X1+1, Y2 =:= Y1+1);
-    (X2 =:= X1+1, Y2 =:= Y1-1)
+    (X2 is X1-1, Y2 is Y1-1);
+    (X2 is X1-1, Y2 is Y1+1);
+    (X2 is X1+1, Y2 is Y1+1);
+    (X2 is X1+1, Y2 is Y1-1)
     ).
 
-esTurno(Casilla, Turno) :-
-    Casilla = '>',
-    Casilla = Turno.
-esTurno(Casilla, Turno) :-
-    Casilla = '>>',
-    Turno = '>'.
-esTurno(Casilla, Turno) :-
-    Casilla = '<<',
-    Turno = '<'.
-esTurno(Casilla, Turno) :-
-    Casilla = '<',
-    Casilla = Turno.
+puntoMedio(A, B, C):-
+	C is (A + B) div 2.
+
+verificarFicha(Posicion, Tablero, Turno) :-
+	 element_at(Ficha, Tablero, Posicion),
+    Ficha = '<<',
+    Turno = 0.
+verificarFicha(Posicion, Tablero, Turno) :-
+	 element_at(Ficha, Tablero, Posicion),
+    Ficha = '<',
+    Turno = 0.
+verificarFicha(Posicion, Tablero, Turno) :-
+	 element_at(Ficha, Tablero, Posicion),
+    Ficha = '>',
+    Turno = 1.
+verificarFicha(Posicion, Tablero, Turno) :-
+	 element_at(Ficha, Tablero, Posicion),
+    Ficha = '>>',
+    Turno = 1.
+
+esVacia(Posicion, Tablero):-
+	 element_at(Ficha, Tablero, Posicion),
+	 Ficha = ' '.
 
 destinoValido(Destino, Turno) :-
     Destino = ' '.
@@ -112,40 +160,58 @@ imprimirLinea([X|Xs]) :-
     
 
 
+calcPos(X,Y,Z):-
+	Z is(X-1)*8 +Y.
 
-mover(Tablero, PosIni, PosFin, Casilla) :-
-    remove_at(Casilla, Tablero, PosIni, Tablero2),
+mover(Tablero, PosIni, PosFin, Ficha) :-
+    remove_at(Ficha, Tablero, PosIni, Tablero2),
     insert_at(' ', Tablero2, PosIni, Tablero3),
     remove_at(' ', Tablero3, PosFin, Tablero4),
-    insert_at(Casilla, Tablero4, PosFin, Tablero5),
+    insert_at(Ficha, Tablero4, PosFin, Tablero5),
     nb_setval(tab, Tablero5).
 
-jugada(X1,Y1,X2,Y2) :-
-    nb_getval(turno, Turno),
-    nb_getval(tab, Tablero),
-    PosIni = (X1-1)*8+Y1,
-    element_at(Casilla, Tablero, PosIni),
-    esTurno(Casilla, Turno),
-    coordValidas(X1,Y1,X2,Y2, Casilla),
-    PosFin = (X2-1)*8+Y2,
-    element_at(Destino, Tablero, PosFin),
-    destinoValido(Destino,Turno),
-    mover(Tablero, PosIni, PosFin, Casilla),
-    cambiarTurno(Turno),
-    imprimirTablero, nl,
-    imprimirTurno, nl.
+jugadaAux(X,Y,X1,Y1) :-
+		nb_getval(turno, Turno),
+		nb_getval(tab, Tablero),
+		PosIni = (X-1)*8+Y,
+		element_at(Ficha, Tablero, PosIni),
+		write('Esta es la ficha = '),
+		write(Ficha),nl,
+		%esTurno(Ficha, Turno),
+		write('antes de puedeMoverse'),nl,
+		puedeMoverse(X,Y,X1,Y1),
+		
+		write('despues de puedeMoverse'),nl,
+
+%		coordValidas(X1,Y1,X2,Y2,Ficha),
+		calcPos(X1,Y1,PosFin),
+%		element_at(Destino, Tablero, PosFin),
+%		destinoValido(Destino,Turno),
+
+		write('Despues de calc'),nl,
+		mover(Tablero, PosIni, PosFin, Ficha),
+		cambiarTurno,
+		write('No se que pasa...'),nl,
+		imprimirTablero, nl,
+		imprimirTurno, nl.
 
 
-    %% Casilla = Turno,
+jugada(X1,Y1,X2,Y2):-
+	 jugadaAux(X1,Y1,X2,Y2).
+%jugada(X1,Y1,X2,Y2):-
+%	 nb_getval(juegapc,Pc),
+%	 Pc = 's',
+%	 jugadaAux(X1,Y1,X2,Y2),
+	 
+	
+    %% Ficha = Turno,
     %% element_at(Destino, Tablero, (X2-1)*8+Y2),
 
 
-cambiarTurno(Turno) :-
-    Turno = '>',
-    nb_setval(turno,'<').
-cambiarTurno(Turno) :-
-    Turno = '<',
-    nb_setval(turno,'>').
+cambiarTurno:-
+	nb_getval(turno, Turno), 
+	X is (Turno + 1) mod 2,	
+	nb_setval(turno, X).
 
 slice([X|_],1,1,[X]).
 slice([X|Xs],1,K,[X|Ys]) :- K > 1, 
@@ -173,41 +239,28 @@ contramaquina(Respuesta) :-
 
 imprimirTurno :-
     nb_getval(turno, Turno),
-    Turno = '<',
-    write('Juega jugador 1').
+    Turno = 0,
+    write('Juega jugador 2').
 imprimirTurno :-
     nb_getval(turno, Turno),
-    Turno = '>',
-    write('Juega jugador 2').
+    Turno = 1,
+    write('Juega jugador 1').
 
 jugar :-
+	 nb_setval(fichas1, 8),  %cantidad de fichas del jugador 1
+	 nb_setval(fichas2, 8),  %cantidad de fichas del jugador 2
+	 write('¿Desea jugar contra la maquina? '),
+	 read(X),
+	 nb_setval(juegapc,X),
+	 nb_getval(juegapc, Juegapc),
+	 write('Este es el valor de juegapc = '),
+	 write(Juegapc),nl,
     inicializarTablero(Tablero),
     nb_setval(tab, Tablero),
-    nb_setval(turno, '<'),
+    nb_setval(turno, 1),
     imprimirTablero, nl,
     imprimirTurno, nl.
     % Imprimir tablero
-
-
-
-
-    
-    
-    
-    
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
 
 
 
