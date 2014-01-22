@@ -1,22 +1,22 @@
-inicializarTablero(Tablero) :-
-    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
-               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
-               ' ', '<', ' ', '<', ' ', '<', ' ', '<',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               '>', ' ', '>', ' ', '>', ' ', '>', ' ',
-               ' ', '>', ' ', '>', ' ', '>', ' ', '>',
-               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
-
 %inicializarTablero(Tablero) :-
-%    Tablero = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%               ' ', ' ', '<<', ' ', ' ', ' ', ' ', ' ',
+%    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
+%               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
+%               ' ', '<', ' ', '<', ' ', '<', ' ', '<',
 %               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
 %               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%               ' ', ' ', ' ', '>>', ' ', ' ', ' ', ' ',
-%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '].
+%               '>', ' ', '>', ' ', '>', ' ', '>', ' ',
+%               ' ', '>', ' ', '>', ' ', '>', ' ', '>',
+%               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
+
+inicializarTablero(Tablero) :-
+    Tablero = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', '<<', ' ', ' ', ' ', '>', ' ',
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', '>>', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '].
 
 
 
@@ -78,6 +78,23 @@ esPeon(Ficha):-
 	Ficha = '<' ;
 	Ficha = '>'.	
 
+coronar(Orig, Dest, Ficha):-
+	Dest > 56,
+	Ficha = '<',
+	nb_getval(tab, Tablero),
+	remove_at(_, Tablero, Orig, Tablero1),
+	insert_at('<<', Tablero1, Orig, Tablero2),
+	nb_setval(tab, Tablero2).	
+coronar(Orig, Dest, Ficha):-
+	Dest < 9,
+	Ficha = '>',
+	nb_getval(tab, Tablero),
+	remove_at(_, Tablero, Orig, Tablero1),
+	insert_at('>>', Tablero1, Orig, Tablero2),
+	nb_setval(tab, Tablero2).
+
+coronar(Orig, Dest, Ficha).
+
 puedeMoverse(X,Y,X1,Y1):-   %Regla para el rey
 	X < 9,
 	Y < 9,
@@ -111,7 +128,8 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando no come
 	esVacia(Dest, Tablero),
 
 	X1 =:= X -2*Turno + 1,
-	(Y1 =:= Y + 1  ;  Y1 =:= Y - 1).
+	(Y1 =:= Y + 1  ;  Y1 =:= Y - 1),
+	coronar(Orig, Dest, Ficha).
 
 puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	X < 9,
@@ -120,6 +138,7 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	Y1 < 9,
 	nb_getval(tab,Tablero),  %Se obtiene el tablero
 	calcPos(X,Y,Orig),
+	element_at(Ficha, Tablero, Orig),
 	esPeon(Ficha),
 	nb_getval(turno,Turno),  %Se obtiene el turno
 	calcPos(X1,Y1,Dest),        %Posicion de destino
@@ -133,7 +152,8 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	calcPos(Xmedio,Ymedio,PosMedio),
 	Adversario is (Turno + 1) mod 2,
 	verificarFicha(PosMedio, Tablero, Adversario),
-	comerFicha(PosMedio).
+	comerFicha(PosMedio),
+	coronar(Orig, Dest, Ficha).
 
 
 puntoMedio(A, B, C):-
@@ -234,9 +254,11 @@ jugadaAux(X,Y,X1,Y1) :-
 		element_at(Ficha, Tablero, PosIni),
 		write(Ficha),nl,
 		puedeMoverse(X,Y,X1,Y1),
+
 		calcPos(X1,Y1,PosFin),
 		nb_getval(tab,Tablero2),
-		mover(Tablero2, PosIni, PosFin, Ficha),
+		mover(Tablero2, PosIni, PosFin, _),
+
 		cambiarTurno,
 		imprimirTablero, nl,
 		imprimirTurno, nl.
