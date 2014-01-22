@@ -1,23 +1,84 @@
+%inicializarTablero(Tablero) :-
+%    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
+%               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
+%               ' ', '<', ' ', '<', ' ', '<', ' ', '<',
+%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+%               '>', ' ', '>', ' ', '>', ' ', '>', ' ',
+%               ' ', '>', ' ', '>', ' ', '>', ' ', '>',
+%               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
+
 inicializarTablero(Tablero) :-
-    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
-               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
-               ' ', '<', ' ', '<', ' ', '<', ' ', '<',
+    Tablero = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               '>', ' ', '>', ' ', '>', ' ', '>', ' ',
-               ' ', '>', ' ', '>', ' ', '>', ' ', '>',
-               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', '>>', ' ', ' ', ' ', ' ',
+               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '].
 
 
 
-esDama(Ficha):-
+
+comerDiagonal(X,Y,X,Y,Tablero):-
+	nb_setval(tab,Tablero).
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la derecha
+	X1 < X,
+	Y1 > Y,
+	nb_getval(turno, Turno),
+	calcPos(X-1,Y+1, Posicion),
+	Adversario is (Turno + 1) mod 2,
+	(esVacio(Posicion) ; verificarFicha(Posicion, Tablero, Adversario)),
+
+	remove_at(X, Tablero, PosMedio, Tablero1),
+	insert_at(' ', Tablero1, PosMedio, Tablero2),
+
+	comerDiagonal(X-1,Y+1,X1,Y1,Tablero2).
+	
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la izquierda
+	X1 < X,
+	Y1 < Y,
+	nb_getval(turno, Turno),
+	calcPos(X-1,Y-1, Posicion),
+	Adversario is (Turno + 1) mod 2,
+	(esVacio(Posicion) ; verificarFicha(Posicion, Tablero, Adversario)),
+
+	remove_at(X, Tablero, PosMedio, Tablero1),
+	insert_at(' ', Tablero1, PosMedio, Tablero2),
+	comerDiagonal(X-1,Y-1,X1,Y1,Tablero2).
+	
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la derecha 
+	X1 > X,
+	Y1 > Y,
+	nb_getval(turno, Turno),
+	calcPos(X+1,Y+1, Posicion),
+	Adversario is (Turno + 1) mod 2,
+	(esVacio(Posicion) ; verificarFicha(Posicion, Tablero, Adversario)),
+	remove_at(X, Tablero, PosMedio, Tablero1),
+	insert_at(' ', Tablero1, PosMedio, Tablero2),
+	comerDiagonal(X+1,Y+1,X1,Y1,Tablero2).
+	
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la izquierda 
+	X1 > X,
+	Y1 < Y,
+	nb_getval(turno, Turno),
+	calcPos(X+1,Y-1, Posicion),
+	Adversario is (Turno + 1) mod 2,
+	(esVacio(Posicion) ; verificarFicha(Posicion, Tablero, Adversario)),
+	remove_at(X, Tablero, PosMedio, Tablero1),
+	insert_at(' ', Tablero1, PosMedio, Tablero2),
+	comerDiagonal(X+1,Y-1,X1,Y1,Tablero2).
+	
+
+esRey(Ficha):-
 	Ficha = '<<' ;
 	Ficha = '>>'.	
 esPeon(Ficha):-
 	Ficha = '<' ;
 	Ficha = '>'.	
 
-puedeMoverse(X,Y,X1,Y1):-
+puedeMoverse(X,Y,X1,Y1):-   %Regla para el rey
 	X < 9,
 	Y < 9,
 	X1 < 9,
@@ -25,6 +86,25 @@ puedeMoverse(X,Y,X1,Y1):-
 	nb_getval(tab,Tablero),  %Se obtiene el tablero
 	calcPos(X,Y,Orig),
 	element_at(Ficha, Tablero, Orig),
+	
+	esRey(Ficha),
+	nb_getval(turno,Turno),  %Se obtiene el turno
+	
+	comerDiagonal(X,Y,X1,Y1,Tablero).
+
+
+
+
+
+puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando no come
+	X < 9,
+	Y < 9,
+	X1 < 9,
+	Y1 < 9,
+	nb_getval(tab,Tablero),  %Se obtiene el tablero
+	calcPos(X,Y,Orig),
+	element_at(Ficha, Tablero, Orig),
+
 	esPeon(Ficha),
 	nb_getval(turno,Turno),  %Se obtiene el turno
 	calcPos(X1,Y1,Dest),        %Posicion de destino
@@ -34,14 +114,14 @@ puedeMoverse(X,Y,X1,Y1):-
 	X1 =:= X -2*Turno + 1,
 	(Y1 =:= Y + 1  ;  Y1 =:= Y - 1).
 
-puedeMoverse(X,Y,X1,Y1):-
+puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	X < 9,
 	Y < 9,
 	X1 < 9,
 	Y1 < 9,
-	calcPos(X,Y,Orig),
 	nb_getval(tab,Tablero),  %Se obtiene el tablero
-	
+	calcPos(X,Y,Orig),
+	esPeon(Ficha),
 	nb_getval(turno,Turno),  %Se obtiene el turno
 	calcPos(X1,Y1,Dest),        %Posicion de destino
 	verificarFicha(Orig, Tablero, Turno),
