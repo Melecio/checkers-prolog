@@ -1,5 +1,5 @@
 inicializarTablero(Tablero) :-
-    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
+    Tablero = ['>>', '<<', ' ', '<', ' ', '<', ' ', '<',
                '<', ' ', '<', ' ', '<', ' ', '<', ' ',
                ' ', '<', ' ', '<', ' ', '<', ' ', '<',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
@@ -39,16 +39,12 @@ puedeMoverse(X,Y,X1,Y1):-
 
 	X1 =:= X -4*Turno + 2,
 	(Y1 =:= Y + 2  ;  Y1 =:= Y - 2),
-	write('llegue hola'),nl,
 	puntoMedio(X,X1,Xmedio),
 	puntoMedio(Y,Y1,Ymedio),
 	calcPos(Xmedio,Ymedio,PosMedio),
-	write('Ya calcule punto medio'),nl,
 	Adversario is (Turno + 1) mod 2,
 	verificarFicha(PosMedio, Tablero, Adversario),
-	write('Verifico'),nl,
-%	comerFicha(PosMedio),
-	write('ya comi'),nl.
+	comerFicha(PosMedio).
 
 
 puntoMedio(A, B, C):-
@@ -107,6 +103,13 @@ imprimirTablero :-
 imprimirLinea([]) :-
     !.
 imprimirLinea([X|Xs]) :-
+    (X = '>>' ; X = '<<'),
+    write('|'),
+    write(X),
+    write('| '),
+    imprimirLinea(Xs).
+
+imprimirLinea([X|Xs]) :-
     write('|'),
     write(X),
     write(' | '),
@@ -118,15 +121,14 @@ calcPos(X,Y,Z):-
 
 
 comerFicha(PosMedio):- 
-	write('andentro de comerficha '),nl,
 	nb_getval(tab, Tablero),
-	element_at(X,Tabl,PosMedio),
-
-	remove_at('>', Tabl, PosMedio, Tablero1),
-	write('Pos medio es = '),
-	write(PosMedio),nl,
-	insert_at(' ', Tablero2, PosMedio, Tablero3),
-	nb_setval(tab, Tablero3).	
+    write('Hola'), nl, 
+	remove_at('>', Tablero, PosMedio, Tablero1),
+    write(Tablero), nl, 
+    write(Tablero1), nl,
+	insert_at(' ', Tablero1, PosMedio, Tablero2),
+    write(Tablero2), nl,
+	nb_setval(tab, Tablero2).	
 
 mover(Tablero, PosIni, PosFin, Ficha) :-
     remove_at(Ficha, Tablero, PosIni, Tablero2),
@@ -144,10 +146,8 @@ jugadaAux(X,Y,X1,Y1) :-
 		write(Ficha),nl,
 		puedeMoverse(X,Y,X1,Y1),
 		calcPos(X1,Y1,PosFin),
-		write('Despues de calc'),nl,
 		mover(Tablero, PosIni, PosFin, Ficha),
 		cambiarTurno,
-		write('No se que pasa...'),nl,
 		imprimirTablero, nl,
 		imprimirTurno, nl.
 
@@ -218,9 +218,14 @@ jugar :-
     imprimirTurno, nl.
     % Imprimir tablero
 
+
+% Pruebas
+
 prueba:-
 	jugada(6,5,5,4),
 	jugada(3,4,4,3),
 	jugada(6,7,5,8),
 	jugada(4,3,6,5).
 
+recta(X,X1,Y,Y1,M) :-
+    Y - Y1 == M*(X-X1).
