@@ -1,22 +1,22 @@
-%inicializarTablero(Tablero) :-
-%    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
-%               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
-%               ' ', '<', ' ', '<', ' ', '<', ' ', '<',
-%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%               '>', ' ', '>', ' ', '>', ' ', '>', ' ',
-%               ' ', '>', ' ', '>', ' ', '>', ' ', '>',
-%               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
-
 inicializarTablero(Tablero) :-
-    Tablero = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', '<<', ' ', ' ', ' ', ' ', ' ',
+    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
+               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
+               ' ', '<', ' ', '<', ' ', '<', ' ', '<',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', '>>', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '].
+               '>', ' ', '>', ' ', '>', ' ', '>', ' ',
+               ' ', '>', ' ', '>', ' ', '>', ' ', '>',
+               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
+
+%inicializarTablero(Tablero) :-
+%    Tablero = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+%               ' ', ' ', '<<', ' ', ' ', ' ', ' ', ' ',
+%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+%               ' ', ' ', ' ', '>>', ' ', ' ', ' ', ' ',
+%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '].
 
 
 
@@ -91,7 +91,6 @@ puedeMoverse(X,Y,X1,Y1):-   %Regla para el rey
 	nb_getval(turno,Turno),  %Se obtiene el turno
 	
 	comerDiagonal(X,Y,X1,Y1,Tablero).
-
 
 
 
@@ -213,7 +212,7 @@ calcPos(X,Y,Z):-
 comerFicha(PosMedio):- 
 	nb_getval(tab, Tablero),
     write('Hola'), nl, 
-	remove_at('>', Tablero, PosMedio, Tablero1),
+	remove_at(_, Tablero, PosMedio, Tablero1),
     write(Tablero), nl, 
     write(Tablero1), nl,
 	insert_at(' ', Tablero1, PosMedio, Tablero2),
@@ -236,7 +235,8 @@ jugadaAux(X,Y,X1,Y1) :-
 		write(Ficha),nl,
 		puedeMoverse(X,Y,X1,Y1),
 		calcPos(X1,Y1,PosFin),
-		mover(Tablero, PosIni, PosFin, Ficha),
+		nb_getval(tab,Tablero2),
+		mover(Tablero2, PosIni, PosFin, Ficha),
 		cambiarTurno,
 		imprimirTablero, nl,
 		imprimirTurno, nl.
