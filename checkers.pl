@@ -1,3 +1,4 @@
+%Tablero
 inicializarTablero(Tablero) :-
    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
@@ -10,7 +11,9 @@ inicializarTablero(Tablero) :-
 
 
 
-comerDiagonal(X,Y,X1,Y1,Tablero):-
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Predicado que cambia toda la diagonal
+											  %del tablero por la cual un rey se 
+											  %mueve
 	X =:= X1, Y =:= Y1,
 	nb_setval(tab,Tablero).
 comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la derecha
@@ -65,14 +68,15 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la izquierda
 	comerDiagonal(X+1,Y-1,X1,Y1,Tablero2).
 	
 
-esRey(Ficha):-
+esRey(Ficha):-  %Verifica si una Ficha es Rey
 	Ficha = '<<' ;
 	Ficha = '>>'.	
-esPeon(Ficha):-
+esPeon(Ficha):- %Verifica si una Ficha es Peon
 	Ficha = '<' ;
 	Ficha = '>'.	
 
-coronar(Orig, Dest, Ficha):-
+%Predicado que convierte un peon en Rey, si corona.
+coronar(Orig, Dest, Ficha):- 
 	Dest > 56,
 	Ficha = '<',
 	nb_getval(tab, Tablero),
@@ -88,6 +92,9 @@ coronar(Orig, Dest, Ficha):-
 	nb_setval(tab, Tablero2).
 
 coronar(Orig, Dest, Ficha).
+
+%Predicado que verifica si dada las coordenadas de origin
+%y las de detinos son una jugada valida
 
 puedeMoverse(X,Y,X1,Y1):-   %Regla para el rey
 	X < 9,
@@ -145,6 +152,7 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
     descontarFicha(Turno),
     coronar(Orig, Dest, Ficha).
 
+%descuenta numero de fichas de un jugador
 descontarFicha(Turno) :-
     Turno = 0,
     nb_getval(fichas1, Fichas),
@@ -157,9 +165,12 @@ descontarFicha(Turno) :-
     Fichas2 is Fichas - 1,
     nb_setval(fichas0, Fichas2).
 
+%Calcula el punto medio
 puntoMedio(A, B, C):-
 	C is (A + B) div 2.
 
+%Verifica si hay una ficha del jugador Turno en Posicion
+%de Tablero 
 verificarFicha(Posicion, Tablero, Turno) :-
 	 element_at(Ficha, Tablero, Posicion),
     Ficha = '<<',
@@ -177,10 +188,12 @@ verificarFicha(Posicion, Tablero, Turno) :-
     Ficha = '>>',
     Turno = 1.
 
+%Verifica si una Posicion en Tablero es vacia
 esVacia(Posicion, Tablero):-
 	 element_at(Ficha, Tablero, Posicion),
 	 Ficha = ' '.
 
+%Imprime el Tablero
 imprimirTablero :-
     nb_getval(tab,Tablero),
     write('    1    2    3    4    5    6    7    8'), nl,
@@ -209,7 +222,7 @@ imprimirTablero :-
     write('8  '),
     imprimirLinea(Linea8), nl.
     
-
+%Predicado Auxiliar para Imprimir tablero
 imprimirLinea([]) :-
     !.
 imprimirLinea([X|Xs]) :-
@@ -225,17 +238,19 @@ imprimirLinea([X|Xs]) :-
     write(' | '),
     imprimirLinea(Xs).
     
-
+%Dado un X,Y de se obtiene un Z que representa
+%la posicion en el arreglo unidimensional del tablero
 calcPos(X,Y,Z):-
 	Z is(X-1)*8 +Y.
 
-
+%Come ficha
 comerFicha(PosMedio):- 
 	nb_getval(tab, Tablero),
 	remove_at(_, Tablero, PosMedio, Tablero1),
 	insert_at(' ', Tablero1, PosMedio, Tablero2),
 	nb_setval(tab, Tablero2).	
 
+%Mover ficha desde PosIni hasta PosFin
 mover(Tablero, PosIni, PosFin, Ficha) :-
     remove_at(Ficha, Tablero, PosIni, Tablero2),
     insert_at(' ', Tablero2, PosIni, Tablero3),
@@ -243,6 +258,7 @@ mover(Tablero, PosIni, PosFin, Ficha) :-
     insert_at(Ficha, Tablero4, PosFin, Tablero5),
     nb_setval(tab, Tablero5).
 
+%Predicado auxiliar para jugada
 jugadaAux(X,Y,X1,Y1) :-
 		nb_getval(turno, Turno),
 		nb_getval(tab, Tablero),
@@ -271,6 +287,12 @@ finJuego :-
 
 
 jugada(X1,Y1,X2,Y2):-
+	 nb_getval(juegapc,Pc),
+	 Pc = 's',
+	 jugadaAux(X1,Y1,X2,Y2),
+	 generarjugadaValida(A,B,A1,B1),
+	 jugadaAux(A,B,A1,B1).
+jugada(X1,Y1,X2,Y2):-
 	 jugadaAux(X1,Y1,X2,Y2).
 %jugada(X1,Y1,X2,Y2):-
 %	 nb_getval(juegapc,Pc),
@@ -293,17 +315,19 @@ slice([X|Xs],1,K,[X|Ys]) :- K > 1,
 slice([_|Xs],I,K,Ys) :- I > 1, 
    I1 is I - 1, K1 is K - 1, slice(Xs,I1,K1,Ys).
 
+%Busca si X pertenece a la lista y esta en K
 element_at(X,[X|_],1).
 element_at(X,[_|L],K) :- K > 1, K1 is K - 1, element_at(X,L,K1).
 
-
+%Remueve el elemento Kesimo de la lista
 remove_at(X,[X|Xs],1,Xs).
 remove_at(X,[Y|Xs],K,[Y|Ys]) :- K > 1, 
    K1 is K - 1, remove_at(X,Xs,K1,Ys).
 
+%Isenrta el elemento Kesimo en la lista
 insert_at(X,L,K,R) :- remove_at(X,R,K,L).
 
-
+%Verifica si se quiere jugar contra la maquina
 contramaquina(Respuesta) :-
     Respuesta = 's',
     write('contra maquina').
@@ -320,6 +344,7 @@ imprimirTurno :-
     Turno = 1,
     write('Juega jugador 1').
 
+%Se inicializa el juego
 jugar :-
 	 nb_setval(fichas0, 12),  %cantidad de fichas del jugador 1
 	 nb_setval(fichas1, 12),  %cantidad de fichas del jugador 2
