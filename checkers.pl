@@ -19,7 +19,8 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la derecha
 	nb_getval(turno, Turno),
 	calcPos(X-1,Y+1, Posicion),
 	Adversario is (Turno + 1) mod 2,
-	(esVacia(Posicion,Tablero) ; verificarFicha(Posicion, Tablero, Adversario)),
+	(esVacia(Posicion,Tablero) ; (verificarFicha(Posicion, Tablero, Adversario),
+    descontarFicha(Turno))),
 
 	remove_at(_, Tablero, Posicion, Tablero1),
 	insert_at(' ', Tablero1, Posicion, Tablero2),
@@ -32,7 +33,8 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la izquierda
 	nb_getval(turno, Turno),
 	calcPos(X-1,Y-1, Posicion),
 	Adversario is (Turno + 1) mod 2,
-	(esVacia(Posicion,Tablero) ; verificarFicha(Posicion, Tablero, Adversario)),
+	(esVacia(Posicion,Tablero) ; (verificarFicha(Posicion, Tablero, Adversario),
+    descontarFicha(Turno))),
 
 	remove_at(_, Tablero, Posicion, Tablero1),
 	insert_at(' ', Tablero1, Posicion, Tablero2),
@@ -44,7 +46,8 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la derecha
 	nb_getval(turno, Turno),
 	calcPos(X+1,Y+1, Posicion),
 	Adversario is (Turno + 1) mod 2,
-	(esVacia(Posicion,Tablero) ; verificarFicha(Posicion, Tablero, Adversario)),
+	(esVacia(Posicion,Tablero) ; (verificarFicha(Posicion, Tablero, Adversario),
+    descontarFicha(Turno))),
 	remove_at(_, Tablero, Posicion, Tablero1),
 	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X+1,Y+1,X1,Y1,Tablero2).
@@ -55,7 +58,8 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la izquierda
 	nb_getval(turno, Turno),
 	calcPos(X+1,Y-1, Posicion),
 	Adversario is (Turno + 1) mod 2,
-	(esVacia(Posicion,Tablero) ; verificarFicha(Posicion, Tablero, Adversario)),
+	(esVacia(Posicion,Tablero) ; (verificarFicha(Posicion, Tablero, Adversario),
+    descontarFicha(Turno))),
 	remove_at(_, Tablero, Posicion, Tablero1),
 	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X+1,Y-1,X1,Y1,Tablero2).
@@ -93,14 +97,9 @@ puedeMoverse(X,Y,X1,Y1):-   %Regla para el rey
 	nb_getval(tab,Tablero),  %Se obtiene el tablero
 	calcPos(X,Y,Orig),
 	element_at(Ficha, Tablero, Orig),
-	
 	esRey(Ficha),
 	%% nb_getval(turno,Turno),  %Se obtiene el turno
-	
 	comerDiagonal(X,Y,X1,Y1,Tablero).
-
-
-
 
 puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando no come
 	X < 9,
