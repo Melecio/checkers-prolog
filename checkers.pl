@@ -1,4 +1,4 @@
-%Tablero
+%Inicializacion del tablero 
 inicializarTablero(Tablero) :-
    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
@@ -10,13 +10,14 @@ inicializarTablero(Tablero) :-
               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
 
 
-
-comerDiagonal(X,Y,X1,Y1,Tablero):- %Predicado que cambia toda la diagonal
-											  %del tablero por la cual un rey se 
-											  %mueve
+% Predicado que cambia toda la diagonal el tablero por la cual un rey se mueve
+% Recibe X,Y como coordenadas de partida del rey, X1,Y1 como coordenadas de 
+% llegada sobre el Tablero
+comerDiagonal(X,Y,X1,Y1,Tablero):- 
 	X =:= X1, Y =:= Y1,
 	nb_setval(tab,Tablero).
-comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la derecha
+
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Caso arriba a la derecha
 	X1 < X,
 	Y1 > Y,
 	nb_getval(turno, Turno),
@@ -24,13 +25,11 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la derecha
 	Adversario is (Turno + 1) mod 2,
 	(esVacia(Posicion,Tablero) ; (verificarFicha(Posicion, Tablero, Adversario),
     descontarFicha(Turno))),
-
 	remove_at(_, Tablero, Posicion, Tablero1),
 	insert_at(' ', Tablero1, Posicion, Tablero2),
-    
 	comerDiagonal(X-1,Y+1,X1,Y1,Tablero2).
 	
-comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la izquierda
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Caso arriba a la izquierda
 	X1 < X,
 	Y1 < Y,
 	nb_getval(turno, Turno),
@@ -38,12 +37,11 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la izquierda
 	Adversario is (Turno + 1) mod 2,
 	(esVacia(Posicion,Tablero) ; (verificarFicha(Posicion, Tablero, Adversario),
     descontarFicha(Turno))),
-
 	remove_at(_, Tablero, Posicion, Tablero1),
 	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X-1,Y-1,X1,Y1,Tablero2).
 	
-comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la derecha 
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Caso abajo a la derecha 
 	X1 > X,
 	Y1 > Y,
 	nb_getval(turno, Turno),
@@ -55,7 +53,7 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la derecha
 	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X+1,Y+1,X1,Y1,Tablero2).
 	
-comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la izquierda 
+comerDiagonal(X,Y,X1,Y1,Tablero):- %Caso abajo a la izquierda 
 	X1 > X,
 	Y1 < Y,
 	nb_getval(turno, Turno),
@@ -67,11 +65,11 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Abajo a la izquierda
 	insert_at(' ', Tablero1, Posicion, Tablero2),
 	comerDiagonal(X+1,Y-1,X1,Y1,Tablero2).
 	
-
-esRey(Ficha):-  %Verifica si una Ficha es Rey
+%Verifica si una Ficha es Rey o Peon
+esRey(Ficha):-  
 	Ficha = '<<' ;
 	Ficha = '>>'.	
-esPeon(Ficha):- %Verifica si una Ficha es Peon
+esPeon(Ficha):- 
 	Ficha = '<' ;
 	Ficha = '>'.	
 
@@ -93,8 +91,11 @@ coronar(Orig, Dest, Ficha):-
 
 coronar(Orig, Dest, Ficha).
 
-%Predicado que verifica si dada las coordenadas de origin
-%y las de detinos son una jugada valida
+% Predicado que verifica si dada las coordenadas de origin y las de detinos son
+% una jugada valida. 
+%
+% Recibe X y Y como coordenadas de partida para la ficha y X1 y Y1 como coorde-
+% nadas de llegada.
 
 puedeMoverse(X,Y,X1,Y1):-   %Regla para el rey
 	X < 9,
@@ -152,7 +153,7 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
     descontarFicha(Turno),
     coronar(Orig, Dest, Ficha).
 
-%descuenta numero de fichas de un jugador
+% Descuenta numero de fichas de un jugador
 descontarFicha(Turno) :-
     Turno = 0,
     nb_getval(fichas1, Fichas),
@@ -165,12 +166,11 @@ descontarFicha(Turno) :-
     Fichas2 is Fichas - 1,
     nb_setval(fichas0, Fichas2).
 
-%Calcula el punto medio
+%Calcula el punto medio de dos numeros.
 puntoMedio(A, B, C):-
 	C is (A + B) div 2.
 
-%Verifica si hay una ficha del jugador Turno en Posicion
-%de Tablero 
+%Verifica si hay una ficha del jugador Turno en Posicion de Tablero 
 verificarFicha(Posicion, Tablero, Turno) :-
 	 element_at(Ficha, Tablero, Posicion),
     Ficha = '<<',
@@ -352,8 +352,6 @@ jugar :-
 	 read(X),
 	 nb_setval(juegapc,X),
 	 nb_getval(juegapc, Juegapc),
-	 write('Este es el valor de juegapc = '),
-	 write(Juegapc),nl,
     inicializarTablero(Tablero),
     nb_setval(tab, Tablero),
     nb_setval(turno, 1),
