@@ -1,23 +1,12 @@
-%inicializarTablero(Tablero) :-
-%    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
-%               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
-%               ' ', '<', ' ', '<', ' ', '<', ' ', '<',
-%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%               '>', ' ', '>', ' ', '>', ' ', '>', ' ',
-%               ' ', '>', ' ', '>', ' ', '>', ' ', '>',
-%               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
-
 inicializarTablero(Tablero) :-
-    Tablero = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', '<<', ' ', ' ', ' ', '>', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', '>>', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '].
-
+   Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
+              '<', ' ', '<', ' ', '<', ' ', '<', ' ',
+              ' ', '<', ' ', '<', ' ', '<', ' ', '<',
+              ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+              ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+              '>', ' ', '>', ' ', '>', ' ', '>', ' ',
+              ' ', '>', ' ', '>', ' ', '>', ' ', '>',
+              '>', ' ', '>', ' ', '>', ' ', '>', ' '].
 
 
 
@@ -34,6 +23,7 @@ comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la derecha
 
 	remove_at(_, Tablero, Posicion, Tablero1),
 	insert_at(' ', Tablero1, Posicion, Tablero2),
+    
 	comerDiagonal(X-1,Y+1,X1,Y1,Tablero2).
 	
 comerDiagonal(X,Y,X1,Y1,Tablero):- %Arriba a la izquierda
@@ -105,7 +95,7 @@ puedeMoverse(X,Y,X1,Y1):-   %Regla para el rey
 	element_at(Ficha, Tablero, Orig),
 	
 	esRey(Ficha),
-	nb_getval(turno,Turno),  %Se obtiene el turno
+	%% nb_getval(turno,Turno),  %Se obtiene el turno
 	
 	comerDiagonal(X,Y,X1,Y1,Tablero).
 
@@ -153,8 +143,20 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	Adversario is (Turno + 1) mod 2,
 	verificarFicha(PosMedio, Tablero, Adversario),
 	comerFicha(PosMedio),
-	coronar(Orig, Dest, Ficha).
+    descontarFicha(Turno),
+    coronar(Orig, Dest, Ficha).
 
+descontarFicha(Turno) :-
+    Turno = 0,
+    nb_getval(fichas1, Fichas),
+    Fichas2 is Fichas - 1,
+    nb_setval(fichas1, Fichas2).
+
+descontarFicha(Turno) :-
+    Turno = 1,
+    nb_getval(fichas0, Fichas),
+    Fichas2 is Fichas - 1,
+    nb_setval(fichas0, Fichas2).
 
 puntoMedio(A, B, C):-
 	C is (A + B) div 2.
@@ -237,12 +239,8 @@ generarJugadaValida(A,B,A1,B1):-
 	construirListaPc(Tablero),
 comerFicha(PosMedio):- 
 	nb_getval(tab, Tablero),
-    write('Hola'), nl, 
 	remove_at(_, Tablero, PosMedio, Tablero1),
-    write(Tablero), nl, 
-    write(Tablero1), nl,
 	insert_at(' ', Tablero1, PosMedio, Tablero2),
-    write(Tablero2), nl,
 	nb_setval(tab, Tablero2).	
 
 mover(Tablero, PosIni, PosFin, Ficha) :-
@@ -250,7 +248,6 @@ mover(Tablero, PosIni, PosFin, Ficha) :-
     insert_at(' ', Tablero2, PosIni, Tablero3),
     remove_at(' ', Tablero3, PosFin, Tablero4),
     insert_at(Ficha, Tablero4, PosFin, Tablero5),
-
     nb_setval(tab, Tablero5).
 
 jugadaAux(X,Y,X1,Y1) :-
@@ -258,7 +255,6 @@ jugadaAux(X,Y,X1,Y1) :-
 		nb_getval(tab, Tablero),
 		PosIni = (X-1)*8+Y,
 		element_at(Ficha, Tablero, PosIni),
-		write(Ficha),nl,
 		puedeMoverse(X,Y,X1,Y1),
 
 		calcPos(X1,Y1,PosFin),
@@ -267,7 +263,18 @@ jugadaAux(X,Y,X1,Y1) :-
 
 		cambiarTurno,
 		imprimirTablero, nl,
-		imprimirTurno, nl.
+		imprimirTurno, nl,
+        not(finJuego).
+
+finJuego :-
+    nb_getval(fichas0, Fichas),
+    Fichas = 0,
+    write('Ha ganado el jugador 1'),nl.
+
+finJuego :-
+    nb_getval(fichas1, Fichas),
+    Fichas = 0,
+    write('Ha ganado el jugador 2'),nl.
 
 
 jugada(X1,Y1,X2,Y2):-
@@ -327,8 +334,8 @@ imprimirTurno :-
     write('Juega jugador 1').
 
 jugar :-
-	 nb_setval(fichas1, 8),  %cantidad de fichas del jugador 1
-	 nb_setval(fichas2, 8),  %cantidad de fichas del jugador 2
+	 nb_setval(fichas0, 12),  %cantidad de fichas del jugador 1
+	 nb_setval(fichas1, 12),  %cantidad de fichas del jugador 2
 	 write('¿Desea jugar contra la maquina? '),
 	 read(X),
 	 nb_setval(juegapc,X),
@@ -340,7 +347,6 @@ jugar :-
     nb_setval(turno, 1),
     imprimirTablero, nl,
     imprimirTurno, nl.
-    % Imprimir tablero
 
 
 % Pruebas
@@ -350,6 +356,3 @@ prueba:-
 	jugada(3,4,4,3),
 	jugada(6,7,5,8),
 	jugada(4,3,6,5).
-
-recta(X,X1,Y,Y1,M) :-
-    Y - Y1 == M*(X-X1).
