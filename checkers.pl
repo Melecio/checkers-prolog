@@ -228,7 +228,13 @@ imprimirLinea([X|Xs]) :-
 calcPos(X,Y,Z):-
 	Z is(X-1)*8 +Y.
 
-
+construirListaPc(['<'|Xs],L):-
+	construirListaPc(Xs,L).
+construirListaPc([_|Xs],L):-
+	construirListaPc(Xs,L).
+generarJugadaValida(A,B,A1,B1):-
+	nb_getval(tab, Tablero),
+	construirListaPc(Tablero),
 comerFicha(PosMedio):- 
 	nb_getval(tab, Tablero),
     write('Hola'), nl, 
@@ -264,6 +270,12 @@ jugadaAux(X,Y,X1,Y1) :-
 		imprimirTurno, nl.
 
 
+jugada(X1,Y1,X2,Y2):-
+	 nb_getval(juegapc,Pc),
+	 Pc = 's',
+	 jugadaAux(X1,Y1,X2,Y2),
+	 generarjugadaValida(A,B,A1,B1),
+	 jugadaAux(A,B,A1,B1).
 jugada(X1,Y1,X2,Y2):-
 	 jugadaAux(X1,Y1,X2,Y2).
 %jugada(X1,Y1,X2,Y2):-
