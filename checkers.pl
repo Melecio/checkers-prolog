@@ -1,23 +1,12 @@
 inicializarTablero(Tablero) :-
-    Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
-               '<', ' ', '<', ' ', '<', ' ', '<', ' ',
-               ' ', '<', ' ', '<', ' ', '<', ' ', '<',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-               '>', ' ', '>', ' ', '>', ' ', '>', ' ',
-               ' ', '>', ' ', '>', ' ', '>', ' ', '>',
-               '>', ' ', '>', ' ', '>', ' ', '>', ' '].
-
-%% inicializarTablero(Tablero) :-
-%%    Tablero = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%%               ' ', ' ', '<', ' ', ' ', ' ', ' ', ' ',
-%%               ' ', ' ', ' ', '>', ' ', ' ', ' ', ' ',
-%%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-%%               ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '].
-
+   Tablero = [' ', '<', ' ', '<', ' ', '<', ' ', '<',
+              '<', ' ', '<', ' ', '<', ' ', '<', ' ',
+              ' ', '<', ' ', '<', ' ', '<', ' ', '<',
+              ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+              ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+              '>', ' ', '>', ' ', '>', ' ', '>', ' ',
+              ' ', '>', ' ', '>', ' ', '>', ' ', '>',
+              '>', ' ', '>', ' ', '>', ' ', '>', ' '].
 
 
 
@@ -79,6 +68,23 @@ esPeon(Ficha):-
 	Ficha = '<' ;
 	Ficha = '>'.	
 
+coronar(Orig, Dest, Ficha):-
+	Dest > 56,
+	Ficha = '<',
+	nb_getval(tab, Tablero),
+	remove_at(_, Tablero, Orig, Tablero1),
+	insert_at('<<', Tablero1, Orig, Tablero2),
+	nb_setval(tab, Tablero2).	
+coronar(Orig, Dest, Ficha):-
+	Dest < 9,
+	Ficha = '>',
+	nb_getval(tab, Tablero),
+	remove_at(_, Tablero, Orig, Tablero1),
+	insert_at('>>', Tablero1, Orig, Tablero2),
+	nb_setval(tab, Tablero2).
+
+coronar(Orig, Dest, Ficha).
+
 puedeMoverse(X,Y,X1,Y1):-   %Regla para el rey
 	X < 9,
 	Y < 9,
@@ -112,7 +118,8 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando no come
 	esVacia(Dest, Tablero),
 
 	X1 =:= X -2*Turno + 1,
-	(Y1 =:= Y + 1  ;  Y1 =:= Y - 1).
+	(Y1 =:= Y + 1  ;  Y1 =:= Y - 1),
+	coronar(Orig, Dest, Ficha).
 
 puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	X < 9,
@@ -121,6 +128,7 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	Y1 < 9,
 	nb_getval(tab,Tablero),  %Se obtiene el tablero
 	calcPos(X,Y,Orig),
+	element_at(Ficha, Tablero, Orig),
 	esPeon(Ficha),
 	nb_getval(turno,Turno),  %Se obtiene el turno
 	calcPos(X1,Y1,Dest),        %Posicion de destino
@@ -135,7 +143,8 @@ puedeMoverse(X,Y,X1,Y1):- %Regla para un peon cuando come
 	Adversario is (Turno + 1) mod 2,
 	verificarFicha(PosMedio, Tablero, Adversario),
 	comerFicha(PosMedio),
-    descontarFicha(Turno).
+    descontarFicha(Turno),
+    coronar(Orig, Dest, Ficha).
 
 descontarFicha(Turno) :-
     Turno = 0,
@@ -148,8 +157,6 @@ descontarFicha(Turno) :-
     nb_getval(fichas0, Fichas),
     Fichas2 is Fichas - 1,
     nb_setval(fichas0, Fichas2).
-
-
 
 puntoMedio(A, B, C):-
 	C is (A + B) div 2.
@@ -243,9 +250,11 @@ jugadaAux(X,Y,X1,Y1) :-
 		PosIni = (X-1)*8+Y,
 		element_at(Ficha, Tablero, PosIni),
 		puedeMoverse(X,Y,X1,Y1),
+
 		calcPos(X1,Y1,PosFin),
 		nb_getval(tab,Tablero2),
-		mover(Tablero2, PosIni, PosFin, Ficha),
+		mover(Tablero2, PosIni, PosFin, _),
+
 		cambiarTurno,
 		imprimirTablero, nl,
 		imprimirTurno, nl,
@@ -335,6 +344,3 @@ prueba:-
 	jugada(3,4,4,3),
 	jugada(6,7,5,8),
 	jugada(4,3,6,5).
-
-recta(X,X1,Y,Y1,M) :-
-    Y - Y1 == M*(X-X1).
